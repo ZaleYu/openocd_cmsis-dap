@@ -1667,7 +1667,7 @@ static int gdb_breakpoint_watchpoint_packet(struct connection *connection,
 	type = strtoul(packet + 1, &separator, 16);
 
 	if (type == 0)	/* memory breakpoint */
-		bp_type = BKPT_SOFT;
+		bp_type = BKPT_HARD; //BKPT_SOFT
 	else if (type == 1)	/* hardware breakpoint */
 		bp_type = BKPT_HARD;
 	else if (type == 2)	/* write watchpoint */

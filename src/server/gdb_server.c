@@ -132,7 +132,7 @@ static int gdb_flash_program = 1;
  * see the code in gdb_read_memory_packet() for further explanations.
  * Disabled by default.
  */
-static int gdb_report_data_abort;
+static int gdb_report_data_abort = 1;
 /* If set, errors when accessing registers are reported to gdb. Disabled by
  * default. */
 static int gdb_report_register_access_error;

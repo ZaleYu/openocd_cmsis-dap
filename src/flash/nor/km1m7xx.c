@@ -119,7 +119,7 @@ static int km1m7xx_erase(struct flash_bank *bank, unsigned int first, unsigned i
 		/* Wait for erase completion */
 		target_read_u32(bank->target, FMON, &read_fmon);
 		read_fmon &= 0xFFFF;
-		timeout = GetTickCount();
+		timeout = timeval_ms();
 		while (1) {
 
 			/* Check for completion */
@@ -135,7 +135,7 @@ static int km1m7xx_erase(struct flash_bank *bank, unsigned int first, unsigned i
 			}
 
 			/* Check timeout */
-			if ((GetTickCount() - timeout) > TIMEOUT_ERASE) {
+			if ((timeval_ms() - timeout) > TIMEOUT_ERASE) {
 				LOG_DEBUG("km1m7xx_erase() timeout : FMON = %d\n", read_fmon);
 				return(ERROR_FAIL);
 			}

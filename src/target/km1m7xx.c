@@ -30,7 +30,7 @@
  *   Nuvoton KM1M7 series.This file was created based on cortex_m.c.       *
  *                                                                         *
  *   Copyright (C) 2021 by Nuvoton Technology Corporation Japan            *
- *   yamaguchi.yoshikazu@nuvoton.com                                       *
+ *   Yoshikazu Yamaguchi <yamaguchi.yoshikazu@nuvoton.com>                 *
  *                                                                         *
  ***************************************************************************/
 #ifdef HAVE_CONFIG_H
@@ -1753,6 +1753,11 @@ COMMAND_HANDLER(km1m7xx_handle_calc_image_checksum_command)
 			break;
 		}
 
+		LOG_INFO(	"checksum of section:0x%08x-0x%08x is 0x%08x\n",
+					(uint32_t)image.sections[i].base_address,
+					(uint32_t)image.sections[i].base_address + buf_cnt - 1,
+					checksum);
+
 		free(buffer);
 		image_size += buf_cnt;
 	}
@@ -1816,6 +1821,11 @@ COMMAND_HANDLER(km1m7xx_handle_calc_memory_checksum_command)
 			break;
 		}
 
+		LOG_INFO(	"checksum of section:0x%08x-0x%08x is (file)0x%08x, (memory)0x%08x\n",
+					(uint32_t)image.sections[i].base_address,
+					(uint32_t)image.sections[i].base_address + buf_cnt - 1,
+					checksum, mem_checksum);
+
 		free(buffer);
 		image_size += buf_cnt;
 	}
@@ -1830,12 +1840,12 @@ COMMAND_HANDLER(km1m7xx_handle_keycode_file_command)
 	int			key_count;
 
 	if (CMD_ARGC != 1) {
-		return(ERROR_COMMAND_SYNTAX_ERROR);
+		return ERROR_COMMAND_SYNTAX_ERROR;
 	}
 
 	fp_keyfile = fopen(CMD_ARGV[0], "r");
 	if (fp_keyfile == NULL) {
-		return(ERROR_FAIL);
+		return ERROR_FAIL;
 	}
 
 	key_count = 0;
@@ -1845,8 +1855,8 @@ COMMAND_HANDLER(km1m7xx_handle_keycode_file_command)
 	fclose(fp_keyfile);
 
 	km1m7xx_key_set = 1;
-	
-	return(ERROR_OK);
+
+	return ERROR_OK;
 }
 
 COMMAND_HANDLER(km1m7xx_handle_keycode_data_command)
@@ -1855,7 +1865,7 @@ COMMAND_HANDLER(km1m7xx_handle_keycode_data_command)
 	int			key_count;
 
 	if (CMD_ARGC != 4) {
-		return(ERROR_COMMAND_SYNTAX_ERROR);
+		return ERROR_COMMAND_SYNTAX_ERROR;
 	}
 
 	for (key_count = 0; key_count < 4; key_count++) {
@@ -1869,7 +1879,7 @@ COMMAND_HANDLER(km1m7xx_handle_keycode_data_command)
 	}
 
 	km1m7xx_key_set = 1;
-	return(ERROR_OK);
+	return ERROR_OK;
 }
 
 static const struct command_registration km1m7xx_subcommand_handlers[] = {
@@ -1877,29 +1887,29 @@ static const struct command_registration km1m7xx_subcommand_handlers[] = {
 		.name		= "calc_image_checksum",
 		.handler	= km1m7xx_handle_calc_image_checksum_command,
 		.mode		= COMMAND_ANY,
-		.usage		= "<file>",
+		.usage		= "filename",
 		.help		= "calculate checksum of image file",
 	},
 	{
 		.name		= "calc_memory_checksum",
 		.handler	= km1m7xx_handle_calc_memory_checksum_command,
 		.mode		= COMMAND_EXEC,
-		.usage		= "<file>",
+		.usage		= "filename",
 		.help		= "calculate checksum of target memory and image file",
 	},
 	{
 		.name		= "keycode_file",
 		.handler	= km1m7xx_handle_keycode_file_command,
 		.mode		= COMMAND_CONFIG,
-		.usage		= "<file>",
+		.usage		= "filename",
 		.help		= "Set keycode file for authentication",
 	},
 	{
 		.name		= "keycode_data",
 		.handler	= km1m7xx_handle_keycode_data_command,
 		.mode		= COMMAND_CONFIG,
-		.usage		= "<file>",
-		.help		= "Set keycode data for authentication",
+		.usage		= "keycode0 keycode1 keycode2 keycode3",
+		.help		= "Set 4 keycode data for authentication",
 	},
 	COMMAND_REGISTRATION_DONE
 };

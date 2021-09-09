@@ -1,6 +1,6 @@
 /***************************************************************************
- * (C) Nuvoton Technology Corporation Japan 2021                           *
- *   yamaguchi.yoshikazu@nuvoton.com                                       *
+ *   Copyright (C) 2021 by Nuvoton Technology Corporation Japan            *
+ *   Yoshikazu Yamaguchi <yamaguchi.yoshikazu@nuvoton.com>                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -68,7 +68,7 @@ struct km1m7xx_flash_bank {
  *						<ChipWidth>	: Chip width in byte (Not use)
  *						<BusWidth>	: Bus width in byte (Not use)
  *						<Target>	: Target device (***.cpu)
- *						<Type>		: Write contorol type
+ *						<Type>		: Write control type
  * @param
  * @return	int			ERROR_OK or the non-zero
  **/
@@ -81,7 +81,7 @@ FLASH_BANK_COMMAND_HANDLER(km1m7xx_flash_bank_command)
 
 	km1m7xx_info->probed	= 0;
 
-	return(ERROR_OK);
+	return ERROR_OK;
 }
 
 static int km1m7xx_erase(struct flash_bank *bank, unsigned int first, unsigned int last)
@@ -100,7 +100,7 @@ static int km1m7xx_erase(struct flash_bank *bank, unsigned int first, unsigned i
 	/* Erase specified sectors */
 	for (sector_index = first; sector_index <= last; sector_index++) {
 
-		/* Get sector addres */
+		/* Get sector address */
 		address = bank->base + bank->sectors[sector_index].offset;
 		LOG_INFO("Erase at 0x%08x (Index:%d) \n", address, sector_index);
 
@@ -119,7 +119,7 @@ static int km1m7xx_erase(struct flash_bank *bank, unsigned int first, unsigned i
 		/* Wait for erase completion */
 		target_read_u32(bank->target, FMON, &read_fmon);
 		read_fmon &= 0xFFFF;
-		timeout = timeval_ms();
+		timeout = GetTickCount();
 		while (1) {
 
 			/* Check for completion */
@@ -131,13 +131,13 @@ static int km1m7xx_erase(struct flash_bank *bank, unsigned int first, unsigned i
 			/* Check error */
 			if ((read_fmon & FMON_ERROR) != 0) {
 				LOG_DEBUG("km1m7xx_erase() Error : FMON = %d\n", read_fmon);
-				return(ERROR_FAIL);
+				return ERROR_FAIL;
 			}
 
 			/* Check timeout */
-			if ((timeval_ms() - timeout) > TIMEOUT_ERASE) {
+			if ((GetTickCount() - timeout) > TIMEOUT_ERASE) {
 				LOG_DEBUG("km1m7xx_erase() timeout : FMON = %d\n", read_fmon);
-				return(ERROR_FAIL);
+				return ERROR_FAIL;
 			}
 		}
 
@@ -149,11 +149,11 @@ static int km1m7xx_erase(struct flash_bank *bank, unsigned int first, unsigned i
 		/* Check error */
 		if ((read_fmon & FMON_ERROR) != 0) {
 			LOG_DEBUG("km1m7xx_erase() Error : FMON = %d\n", read_fmon);
-			return(ERROR_FAIL);
+			return ERROR_FAIL;
 		}
 	}
 
-	return(ERROR_OK);
+	return ERROR_OK;
 }
 
 static int km1m7xx_write(struct flash_bank *bank, const uint8_t *buffer, uint32_t offset, uint32_t count)
@@ -216,7 +216,7 @@ static int km1m7xx_write(struct flash_bank *bank, const uint8_t *buffer, uint32_
 											&algorithm);
 	if (result != ERROR_OK) {
 		LOG_DEBUG("target_alloc_working_area() = %d\n", result);
-		return(ERROR_TARGET_RESOURCE_NOT_AVAILABLE);
+		return ERROR_TARGET_RESOURCE_NOT_AVAILABLE;
 	}
 
 	/* Transfer write program to RAM */
@@ -227,7 +227,7 @@ static int km1m7xx_write(struct flash_bank *bank, const uint8_t *buffer, uint32_
 	if (result != ERROR_OK) {
 		LOG_DEBUG("target_write_buffer() = %d\n", result);
 		target_free_working_area(target, algorithm);
-		return(result);
+		return result;
 	}
 
 	/* Get working area for data */
@@ -242,7 +242,7 @@ static int km1m7xx_write(struct flash_bank *bank, const uint8_t *buffer, uint32_
 		if (buffer_size < 256) {
 			LOG_DEBUG("target_alloc_working_area_try() = %d\n", result);
 			target_free_working_area(target, algorithm);
-			return(ERROR_TARGET_RESOURCE_NOT_AVAILABLE);
+			return ERROR_TARGET_RESOURCE_NOT_AVAILABLE;
 		}
 	}
 
@@ -362,7 +362,7 @@ static int km1m7xx_write(struct flash_bank *bank, const uint8_t *buffer, uint32_
 	destroy_reg_param(&reg_params[0]);
 	destroy_reg_param(&reg_params[1]);
 
-	return(result);
+	return result;
 }
 
 static int km1m7xx_probe(struct flash_bank *bank)
@@ -389,7 +389,7 @@ static int km1m7xx_probe(struct flash_bank *bank)
 				 * Run km1m7xx_probe() again later
 				 * by leaving km1m7xx_info->probed=0.
 				 **/
-				return(ERROR_OK);
+				return ERROR_OK;
 			}
 			bank->size = ((opt_reg00 & 0x00FF0000) >> 4);
 		} else {
@@ -411,30 +411,30 @@ static int km1m7xx_probe(struct flash_bank *bank)
 	}
 
 	km1m7xx_info->probed = 1;
-	return(ERROR_OK);
+	return ERROR_OK;
 }
 
 static int km1m7xx_protect(struct flash_bank *bank, int set, unsigned int first, unsigned int last)
 {
 	LOG_INFO("protect function is unsupported\n");
-	return(ERROR_FLASH_OPER_UNSUPPORTED);
+	return ERROR_FLASH_OPER_UNSUPPORTED;
 }
 
 static int km1m7xx_erase_check(struct flash_bank *bank)
 {
 	LOG_INFO("erase_check function is unsupported\n");
-	return(ERROR_FLASH_OPER_UNSUPPORTED);
+	return ERROR_FLASH_OPER_UNSUPPORTED;
 }
 
 static int km1m7xx_protect_check(struct flash_bank *bank)
 {
 	LOG_INFO("protect_check function is unsupported\n");
-	return(ERROR_OK);
+	return ERROR_OK;
 }
 
 static int km1m7xx_info(struct flash_bank *bank, char *buf, int buf_size)
 {
-	return(ERROR_OK);
+	return ERROR_OK;
 }
 
 static int km1m7xx_auto_probe(struct flash_bank *bank)
@@ -442,7 +442,7 @@ static int km1m7xx_auto_probe(struct flash_bank *bank)
 	struct km1m7xx_flash_bank *km1m7xx_info = bank->driver_priv;
 
 	if (km1m7xx_info->probed) {
-		return(ERROR_OK);
+		return ERROR_OK;
 	}
 	return(km1m7xx_probe(bank));
 }
@@ -461,11 +461,11 @@ COMMAND_HANDLER(km1m7xx_handle_erase_all_sectors_command)
 		/* Erase all sectors */
 		result = km1m7xx_erase(bank, 0, (bank->num_sectors - 1));
 		if (result != ERROR_OK) {
-			return(result);
+			return result;
 		}
 	}
 
-	return(ERROR_OK);
+	return ERROR_OK;
 }
 
 COMMAND_HANDLER(km1m7xx_handle_check_image_area_command)
@@ -484,7 +484,7 @@ COMMAND_HANDLER(km1m7xx_handle_check_image_area_command)
 	int					out_flag		= 0;
 
 	if (CMD_ARGC != 1) {
-		return(ERROR_COMMAND_SYNTAX_ERROR);
+		return ERROR_COMMAND_SYNTAX_ERROR;
 	}
 
 	/* Get all sectors information of each bank */
@@ -494,7 +494,7 @@ COMMAND_HANDLER(km1m7xx_handle_check_image_area_command)
 
 		if (bank_num > 2) {
 			LOG_ERROR("2 bank over!!\n");
-			return(ERROR_FLASH_OPER_UNSUPPORTED);
+			return ERROR_FLASH_OPER_UNSUPPORTED;
 		}
 
 		/* Get bank information */
@@ -508,7 +508,7 @@ COMMAND_HANDLER(km1m7xx_handle_check_image_area_command)
 	}
 	if (bank_num == 0) {
 		LOG_ERROR("no bank!!\n");
-		return(ERROR_FLASH_BANK_INVALID);
+		return ERROR_FLASH_BANK_INVALID;
 	}
 
 	/* Check if the image contains data outside the flash memory area. */
@@ -518,7 +518,7 @@ COMMAND_HANDLER(km1m7xx_handle_check_image_area_command)
 
 	result = image_open(&image, CMD_ARGV[0], NULL);
 	if (result != ERROR_OK) {
-		return(result);
+		return result;
 	}
 
 	out_flag = 0;
@@ -535,10 +535,10 @@ COMMAND_HANDLER(km1m7xx_handle_check_image_area_command)
 		}
 	}
 	if (out_flag == 1) {
-		return(ERROR_FLASH_DST_OUT_OF_BANK);
+		return ERROR_FLASH_DST_OUT_OF_BANK;
 	}
 
-	return(ERROR_OK);
+	return ERROR_OK;
 }
 
 static const struct command_registration km1m7xx_subcommand_handlers[] = {

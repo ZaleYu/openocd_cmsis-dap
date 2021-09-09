@@ -34,6 +34,7 @@ NOR_DRIVERS = \
 	%D%/jtagspi.c \
 	%D%/kinetis.c \
 	%D%/kinetis_ke.c \
+	%D%/km1m7xx.c \
 	%D%/lpc2000.c \
 	%D%/lpc288x.c \
 	%D%/lpc2900.c \
@@ -71,8 +72,7 @@ NOR_DRIVERS = \
 	%D%/w600.c \
 	%D%/xcf.c \
 	%D%/xmc1xxx.c \
-	%D%/xmc4xxx.c \
-	%D%/km1m7xx.c
+	%D%/xmc4xxx.c
 
 NORHEADERS = \
 	%D%/core.h \

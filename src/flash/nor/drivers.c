@@ -47,6 +47,7 @@ extern const struct flash_driver fespi_flash;
 extern const struct flash_driver jtagspi_flash;
 extern const struct flash_driver kinetis_flash;
 extern const struct flash_driver kinetis_ke_flash;
+extern const struct flash_driver km1m7xx_flash;
 extern const struct flash_driver lpc2000_flash;
 extern const struct flash_driver lpc288x_flash;
 extern const struct flash_driver lpc2900_flash;
@@ -86,7 +87,6 @@ extern const struct flash_driver w600_flash;
 extern const struct flash_driver xcf_flash;
 extern const struct flash_driver xmc1xxx_flash;
 extern const struct flash_driver xmc4xxx_flash;
-extern const struct flash_driver km1m7xx_flash;
 
 /**
  * The list of built-in flash drivers.

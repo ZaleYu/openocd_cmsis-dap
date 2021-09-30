@@ -205,6 +205,7 @@ KM1M7_SRC = \
 	%D%/cortex_m.h \
 	%D%/cortex_a.h \
 	%D%/aarch64.h \
+	%D%/aarch64_system_registers.h \
 	%D%/embeddedice.h \
 	%D%/etb.h \
 	%D%/etm.h \
